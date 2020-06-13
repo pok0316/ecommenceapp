@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Data;
 using CoreEntity.Interfaces;
+using API.Helpers;
+using AutoMapper;
 
 namespace API
 {
@@ -20,8 +22,9 @@ namespace API
             services.AddDbContext<StoreContext>(opt => 
                 opt.UseSqlite(_config.GetConnectionString("DefaultConnection")));
             
+            services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
             services.AddScoped<IProductRepository, ProductRepository>();
-            
+            services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
         }
 
@@ -34,9 +37,8 @@ namespace API
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseStaticFiles();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
